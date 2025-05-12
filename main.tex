@@ -1,0 +1,30 @@
+\documentclass{ltjsarticle}
+\usepackage{luatexja}
+\usepackage{amsmath}
+\usepackage[
+  backend=biber,
+  style=numeric,
+  sorting=nyt,
+  language=auto,
+  autolang=other
+]{biblatex}
+\addbibresource{refs.bib}
+\usepackage{hyperref}
+
+\title{BibLaTeX + Biber テンプレート}
+\author{山田太郎}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{概要}
+この文書は\cite{fujita2020} に基づき、BibLaTeX + Biber による文献管理を説明する。
+
+\section*{結論}
+Biber を使えば文献の柔軟な出力が可能である。
+
+\printbibliography[title=参考文献]
+
+\end{document}
