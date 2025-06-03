@@ -1,0 +1,15 @@
+{
+  "name": "biblatex-python",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter",
+        "James-Yu.latex-workshop"
+      ]
+    }
+  }
+}

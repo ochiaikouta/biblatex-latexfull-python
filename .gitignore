@@ -312,3 +312,18 @@ TSWLatexianTemp*
 *.glstex
 
 # End of https://www.toptal.com/developers/gitignore/api/tex
+__pycache__/
+*.pyc
+*.pyo
+*.log
+*.aux
+*.out
+*.toc
+*.synctex.gz
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+.ipynb_checkpoints/
+.DS_Store
+.env

@@ -1,11 +1,17 @@
-# LaTeX レポートテンプレート（BibLaTeX 日本語対応）
+# LaTeX + Python レポートテンプレート（BibLaTeX 日本語対応, Codespaces対応）
 
-LuaLaTeX + BibLaTeX + Biber + VS Code (LaTeX Workshop拡張) に対応した、日本語論文・レポート用テンプレートです。
+LuaLaTeX + BibLaTeX + Biber + Python（numpy, matplotlib等）+ VS Code (LaTeX Workshop拡張) に対応した、日本語論文・レポート用テンプレートです。  
+**GitHub Codespaces** で即使える開発環境も同梱しています。
+
+---
 
 ## ✅ 特徴
 
 - LuaLaTeX + BibLaTeX（和文参考文献スタイル `jecon` 使用）
+- Python（numpy, matplotlib, jupyter等）も同時に使える
+- requirements.txt でPythonパッケージ管理
 - VS Code の拡張機能 [LaTeX Workshop](https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop) に最適化済み
+- GitHub Codespaces対応（`.devcontainer`ディレクトリ同梱）
 - `Makefile` ＆ `build.sh` によるCLIビルドも対応
 - 図やセクションの分割管理が可能な `figures/`, `sections/` フォルダ付き
 - `.latexmkrc` 同梱で `latexmk` による快適ビルド
@@ -15,14 +21,20 @@ LuaLaTeX + BibLaTeX + Biber + VS Code (LaTeX Workshop拡張) に対応した、�
 
 ## 🚀 クイックスタート
 
-### 1. このリポジトリをクローン
+### 1. GitHub Codespacesで開く（推奨）
+
+- 「Use this template」からリポジトリを作成し、Codespacesで開くだけでLaTeXとPython環境が自動でセットアップされます。
+
+### 2. ローカルで使う場合
 
 ```bash
-git clone https://github.com/ochiaikouta/biblatex-japanese-template.git
+git clone https://github.com/ochiaikouta/biblatex-latexfull-python.git
 cd biblatex-japanese-template
+# Pythonパッケージのインストール
+pip install -r requirements.txt
 ```
 
-### 2. PDFをビルド
+### 3. PDFをビルド
 
 #### VS Code で
 
@@ -39,7 +51,16 @@ make watch     # 自動で再ビルド（latexmk -pvc）
 make view      # PDFを開く（Linuxならxdg-open）
 make help      # ヘルプを表示（使い方一覧）
 ```
-これらのコマンドは、テンプレート同梱の `Makefile` を利用して動作します。CLI派の方や、VS Code以外の環境で編集する場合に便利です。
+
+---
+
+## ✅ 依存環境（例）
+
+- TeX Live 2023 以上（LuaLaTeX 対応済み）
+- `latexmk`, `biber`
+- Python 3.11 以上（numpy, matplotlib, jupyter等）
+- VS Code + LaTeX Workshop 拡張
+- GitHub Codespaces（推奨）
 
 ---
 
@@ -53,10 +74,14 @@ make help      # ヘルプを表示（使い方一覧）
 │   └── section1.tex
 ├── figures/            # 画像格納フォルダ
 │   └── sample.png
+├── notebooks/          # Jupyter Notebook用フォルダ ← 追加
+│   └── sample.ipynb
 ├── .latexmkrc          # latexmk用設定
 ├── .vscode/settings.json  # LaTeX Workshop用のビルド設定（LuaLaTeX対応済）
 ├── Makefile            # makeコマンドでのビルド操作
 ├── build.sh            # シェルスクリプトビルド用（オプション）
+├── requirements.txt    # Pythonパッケージ管理用ファイル
+├── .devcontainer/      # GitHub Codespaces用設定
 └── README.md
 ```
 
@@ -84,21 +109,6 @@ make help      # ヘルプを表示（使い方一覧）
 
 - 日本語参考文献出力は `biblatex` + `biber` + `style=jecon` によって行われます。
 - `.vscode/settings.json` が含まれているので、**VS Code にクローンして開くだけで即LaTeX環境が整います。**
-
----
-
-## ✅ 依存環境（例）
-
-- TeX Live 2023 以上（LuaLaTeX 対応済み）
-- `latexmk`, `biber`
-- VS Code + LaTeX Workshop 拡張
-
----
-
-## 🔄 今後の追加予定（任意）
-
-- Zoteroとの連携方法（Better BibTeX等）
-- 英語版テンプレート
 
 ---
 
