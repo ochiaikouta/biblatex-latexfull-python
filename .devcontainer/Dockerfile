@@ -11,5 +11,5 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # 必要なPythonパッケージをインストール
-COPY requirements.txt .
-RUN pip install --break-system-packages -r requirements.txt
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --break-system-packages -r /tmp/requirements.txt
