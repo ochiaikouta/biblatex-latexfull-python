@@ -48,6 +48,9 @@
 # latexrun
 latex.out/
 
+# Project specific build directory
+build/
+
 ## Auxiliary and intermediate files from other packages:
 # algorithms
 *.alg
@@ -314,20 +317,20 @@ TSWLatexianTemp*
 # LaTeX フォーマッター（latexindent）のバックアップファイル
 *.bak*
 indent.log
+.backups/
 
 # End of https://www.toptal.com/developers/gitignore/api/tex
+
+# Python
 __pycache__/
 *.pyc
 *.pyo
-*.log
-*.aux
-*.out
-*.toc
-*.synctex.gz
-*.bbl
-*.blg
-*.fls
-*.fdb_latexmk
+
+# Jupyter Notebook
 .ipynb_checkpoints/
+
+# macOS
 .DS_Store
+
+# Environment variables
 .env
