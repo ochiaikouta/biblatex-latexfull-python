@@ -1,0 +1,132 @@
+# インデントの基本幅（スペース2個）
+defaultIndent: '  '
+
+# 改行ルールのカスタマイズ
+modifyLineBreaks:
+  # セクション前の空白行
+  blankLinesBeforeSectioning: 1
+  
+  # 一文一行設定（無効にする）
+  oneSentencePerLine:
+    manipulateSentences: 0
+  
+  # テキスト折り返し設定
+  textWrapOptions:
+    columns: 80
+    huge: overflow
+  
+  # 環境の改行設定
+  environments:
+    BeginStartsOnOwnLine: 1
+    BodyStartsOnOwnLine: 1
+    EndStartsOnOwnLine: 1
+    EndFinishesWithLineBreak: 1
+    # 特定環境の個別設定
+    document:
+      BodyStartsOnOwnLine: 1
+    itemize:
+      BodyStartsOnOwnLine: 1
+    enumerate:
+      BodyStartsOnOwnLine: 1
+    equation:
+      BodyStartsOnOwnLine: 1
+      EndStartsOnOwnLine: 1
+  
+  # コマンドの改行設定
+  commands:
+    CommandStartsOnOwnLine: 0
+    CommandNameFinishesWithLineBreak: 0
+    # 特定コマンドの設定
+    "\\section":
+      CommandStartsOnOwnLine: 1
+    "\\subsection":
+      CommandStartsOnOwnLine: 1
+    "\\subsubsection":
+      CommandStartsOnOwnLine: 1
+
+# プレアンブル内でも整形を有効にする
+indentPreamble: 1
+
+# 数式環境の整列設定
+lookForAlignDelims:
+  tabular:
+    delims: 1
+    alignDoubleBackSlash: 1
+    spacesBeforeDoubleBackSlash: 1
+    delimiterRegEx: '(?<!\\)&'
+  array:
+    delims: 1
+    alignDoubleBackSlash: 1
+    spacesBeforeDoubleBackSlash: 1
+  align:
+    delims: 1
+    alignDoubleBackSlash: 1
+    spacesBeforeDoubleBackSlash: 1
+  alignat:
+    delims: 1
+  gather:
+    delims: 0
+  equation:
+    delims: 0
+
+# 環境のインデント設定
+indentRules:
+  document: 0
+  itemize: '  '
+  enumerate: '  '
+  description: '  '
+  quote: '  '
+  quotation: '  '
+  center: '  '
+  flushleft: '  '
+  flushright: '  '
+  verbatim: 0
+  lstlisting: 0
+
+# コマンドのインデント設定
+indentAfterItems:
+  itemize: 1
+  enumerate: 1
+  description: 1
+
+# 空白行とコメントの処理
+removeTrailingWhitespace: 1
+preserveBlankLines: 1
+
+# コメントの処理
+indentAfterHeadings:
+  part:
+    indentAfterThisHeading: 0
+  chapter:
+    indentAfterThisHeading: 0
+  section:
+    indentAfterThisHeading: 0
+  subsection:
+    indentAfterThisHeading: 0
+
+# 特別な処理設定
+specialBeginEnd:
+  # カスタム環境があれば追加
+  specialBeforeCommand: 0
+
+# 改行を保持する特殊な場合
+preserveBlankLines: 1
+condenseMultipleBlankLinesInto: 1
+
+# バックアップファイルの設定（絶対パス）
+backupExtension: .bak
+onlyOneBackUp: 0
+maxNumberOfBackUps: 5
+cycleThroughBackUps: 1
+backupDirectory: /workspace/.backups/
+
+# または絶対パス指定
+# backupDirectory: /workspace/.backups//workspace/.backups/
+
+# ログファイル設定
+logFilePreferences:
+  showEveryYamlRead: 0
+  showAmalgamatedSettings: 0
+  showDecorationStartCodeBlockTrace: 0
+  showDecorationFinishCodeBlockTrace: 0
+  showGitHubInfoFooter: 0
