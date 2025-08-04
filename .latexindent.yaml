@@ -121,7 +121,6 @@ cycleThroughBackUps: 1
 backupDirectory: /workspace/.backups/
 
 # または絶対パス指定
-# backupDirectory: /workspace/.backups//workspace/.backups/
 
 # ログファイル設定
 logFilePreferences:
