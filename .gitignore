@@ -311,6 +311,10 @@ TSWLatexianTemp*
 # glossaries
 *.glstex
 
+# LaTeX フォーマッター（latexindent）のバックアップファイル
+*.bak*
+indent.log
+
 # End of https://www.toptal.com/developers/gitignore/api/tex
 __pycache__/
 *.pyc
