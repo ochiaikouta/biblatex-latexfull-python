@@ -15,6 +15,7 @@ BIBFILE := tex/refs.bib
 TEXDIR := tex
 SECTIONSDIR := $(TEXDIR)/sections
 TEMPLATESDIR := templates
+SAMPLE_DIR := samples
 BACKUPDIR := .backups
 
 # ビルド関連の派生変数
@@ -165,8 +166,27 @@ fmtclean: validate-vars
 # =============================================================================
 
 # テンプレートから新しいプロジェクトを作成
-new-project: validate-vars
+new-project:
 	@echo "📝 新しいプロジェクトを作成します"
+	@echo ""
+	@echo "🔍 現在の設定:"
+	@echo "  作成先: $(TEXFILE).tex"
+	@echo "  文献ファイル: $(BIBFILE)"
+	@echo "  テンプレートディレクトリ: $(TEMPLATESDIR)"
+	@echo ""
+	@if [ -f "$(TEXFILE).tex" ]; then \
+        echo "⚠️  $(TEXFILE).tex が既に存在します"; \
+        read -p "上書きしますか？ (y/N): " overwrite; \
+        if [ "$$overwrite" != "y" ] && [ "$$overwrite" != "Y" ]; then \
+            echo "❌ 操作をキャンセルしました"; \
+            exit 1; \
+        fi; \
+    fi
+	@if [ ! -d "$(TEXDIR)" ]; then \
+        echo "📁 $(TEXDIR)/ ディレクトリを作成中..."; \
+        mkdir -p $(TEXDIR); \
+        echo "✅ $(TEXDIR)/ ディレクトリを作成しました"; \
+    fi
 	@if [ ! -d "$(TEMPLATESDIR)" ]; then \
         echo "⚠️  $(TEMPLATESDIR)/ ディレクトリが存在しません"; \
         echo "💡 基本的なテンプレートを作成しますか？"; \
@@ -179,11 +199,14 @@ new-project: validate-vars
             exit 1; \
         fi; \
     fi
+	@echo ""
 	@echo "利用可能なテンプレート:"
 	@echo "  1. with-bib    - 文献管理対応テンプレート"
 	@echo "  2. simple      - シンプルテンプレート（文献なし）"
 	@echo "  3. academic    - 学術論文テンプレート"
-	@read -p "テンプレートを選択してください (1-3): " choice; \
+	@echo "  4. minimal     - 最小限のテンプレートを自動生成"
+	@echo ""
+	@read -p "テンプレートを選択してください (1-4): " choice; \
     case $$choice in \
         1) if [ -f "$(TEMPLATESDIR)/template-with-bib.tex" ]; then \
                cp $(TEMPLATESDIR)/template-with-bib.tex $(TEXFILE).tex && \
@@ -207,8 +230,39 @@ new-project: validate-vars
            else \
                echo "❌ $(TEMPLATESDIR)/template-academic.tex が見つかりません"; \
            fi;; \
+        4) echo "📝 最小限のLaTeXテンプレートを生成中..."; \
+           printf '%s\n' \
+               '\documentclass{ltjsarticle}' \
+               '\usepackage{luatexja}' \
+               '\usepackage{amsmath}' \
+               '' \
+               '\title{新しいLaTeX文書}' \
+               '\author{著者名}' \
+               '\date{\today}' \
+               '' \
+               '\begin{document}' \
+               '' \
+               '\maketitle' \
+               '' \
+               '\section{はじめに}' \
+               '' \
+               'ここに内容を記述してください。' \
+               '' \
+               '\end{document}' \
+               '' > $(TEXFILE).tex && \
+           echo "✅ 最小限のテンプレートを生成しました";; \
         *) echo "❌ 無効な選択です";; \
     esac
+	@echo ""
+	@echo "🎉 プロジェクトの作成が完了しました！"
+	@echo ""
+	@echo "📋 次のステップ:"
+	@echo "  1. $(TEXFILE).tex を編集"
+	@echo "  2. 'make dev' でビルド"
+	@echo "  3. 'make view' でPDFを確認"
+	@if [ -f "$(BIBFILE)" ]; then \
+        echo "  4. 'make add-bib' で文献を追加"; \
+    fi
 
 # テンプレート一覧を表示
 templates:
@@ -217,26 +271,8 @@ templates:
 	@echo "LaTeXテンプレート:"
 	@ls -la $(TEMPLATESDIR)/template-*.tex 2>/dev/null || echo "  (未作成)"
 	@echo ""
-	@echo "文献テンプレート:"
-
-# プロジェクト状況を表示
-status:
-	@echo "📊 プロジェクト状況:"
-	@echo "  メインファイル: $(TEXFILE).tex"
-	@echo "  セクション数: $(words $(SUBFILES)) ファイル"
-	@if [ -f "$(BIBFILE)" ]; then \
-        echo "  文献ファイル: $(BIBFILE) ✅"; \
-        echo "  文献数: $$(grep -c '^@' $(BIBFILE)) 件"; \
-    else \
-        echo "  文献ファイル: なし ℹ️"; \
-    fi
-	@echo "  ビルド出力: $(BUILDDIR)/"
-	@if [ -d "$(BUILDDIR)" ]; then \
-	    echo "  生成ファイル:"; \
-	    ls -la $(BUILDDIR)/ | grep -E '\.(pdf|synctex\.gz)$$' || echo "    (PDFファイルなし)"; \
-	else \
-	    echo "  (まだビルドされていません)"; \
-	fi
+	@echo "💡 文献テンプレートはMakefileに統合済みです(printfで直接入れてます)"
+	@echo "   文献追加: make add-bib"
 
 # =============================================================================
 # 文献管理
@@ -626,29 +662,56 @@ add-inproceedings:
 # 表示・確認
 # =============================================================================
 
-# PDFを表示
+# PDFをVS Codeで表示
 view: validate-vars
-	@echo "📖 PDFを表示中..."
+	@echo "📖 VS Code でPDFを開いています..."
 	@if [ -f "$(MAINPDF)" ]; then \
         echo "  📄 $(MAINPDF) を開いています..."; \
-        "$$BROWSER" "$(MAINPDF)" || \
-        xdg-open "$(MAINPDF)" 2>/dev/null || \
-        echo "  ⚠️  ブラウザでPDFを開けませんでした。手動で $(MAINPDF) を開いてください"; \
+        code "$(MAINPDF)" || \
+        echo "  ⚠️  VS Codeが利用できません。手動で $(MAINPDF) を開いてください"; \
     else \
         echo "  ❌ PDFファイルが見つかりません: $(MAINPDF)"; \
         echo "  💡 先に 'make all' または 'make dev' でビルドしてください"; \
     fi
 
-# VS Code でPDFを開く
+# LaTeX Workshop の使用方法を表示
 viewhelp:
-	@echo "📖 VS Code でPDFを開いています..."
+	@echo "📖 LaTeX Workshop 使用ガイド"
+	@echo ""
+	@echo "🚀 VS Code でのLaTeX編集:"
+	@echo "  1. LaTeX Workshop 拡張機能をインストール済み"
+	@echo "  2. $(TEXFILE).tex を VS Code で開く"
+	@echo ""
+	@echo "⌨️  便利なショートカット:"
+	@echo "  Ctrl+Alt+B      - LaTeX文書をビルド"
+	@echo "  Ctrl+Alt+V      - PDFプレビューを表示"
+	@echo "  Ctrl+Alt+J      - SyncTeX（PDF↔TeXの相互ジャンプ）"
+	@echo "  Ctrl+Alt+C      - 一時ファイルをクリーンアップ"
+	@echo ""
+	@echo "📖 LaTeX Workshop の機能:"
+	@echo "  • リアルタイムプレビュー"
+	@echo "  • シンタックスハイライト"
+	@echo "  • オートコンプリート"
+	@echo "  • エラーハイライト"
+	@echo "  • 文献管理サポート（BibTeX/BibLaTeX）"
+	@echo ""
+	@echo "🔧 プレビュー設定:"
+	@echo "  • タブでプレビュー: Ctrl+Shift+V"
+	@echo "  • 外部ビューア: 設定で変更可能"
+	@echo "  • 自動更新: ファイル保存時に自動ビルド"
+	@echo ""
+	@echo "💡 トラブルシューティング:"
+	@echo "  • ビルドエラー: 出力パネルでログを確認"
+	@echo "  • 文献が表示されない: 'make fullbuild' を実行"
+	@echo "  • フォーマット: 'make fmt' でコード整形"
+	@echo ""
 	@if [ -f "$(MAINPDF)" ]; then \
-        code "$(MAINPDF)" || \
-        echo "  ⚠️  VS Codeが利用できません。代替方法でPDFを開きます..."; \
-        $(MAKE) --no-print-directory view; \
+        echo "📄 現在のPDF: $(MAINPDF)"; \
+        echo "   ファイルサイズ: $$(du -h $(MAINPDF) | cut -f1)"; \
+        echo "   最終更新: $$(stat -c '%y' $(MAINPDF) | cut -d. -f1)"; \
     else \
-        echo "  ❌ PDFファイルが見つかりません: $(MAINPDF)"; \
-        echo "  💡 先に 'make all' または 'make dev' でビルドしてください"; \
+        echo "📄 PDFファイル: 未作成"; \
+        echo "   💡 'make dev' でビルドしてください"; \
     fi
 
 # 文献ファイルの内容を表示
@@ -706,11 +769,13 @@ status:
 help:
 	@echo "📖 LaTeX文書ビルドシステム ヘルプ"
 	@echo ""
+	@echo "ターミナルで以下のコマンドを実行して、各機能を利用できます:"
+	@echo ""
 	@echo "🚀 基本的な使用方法:"
 	@echo "  make all        - PDFをビルド"
 	@echo "  make dev        - フォーマット→完全ビルド"
-	@echo "  make view       - PDFをブラウザで表示"
-	@echo "  make viewhelp   - PDFをVS Codeで表示"
+	@echo "  make view       - PDFをVS Codeで表示"
+	@echo "  make viewhelp   - LaTeX Workshop の使用方法"
 	@echo ""
 	@echo "🧹 クリーンアップ:"
 	@echo "  make clean      - 一時ファイルを削除（PDFは残す）"
@@ -744,10 +809,19 @@ help:
 	@echo ""
 	@echo "💡 ヒント:"
 	@echo "  - 文献管理には BibLaTeX + Biber を使用"
-	@echo "  - 日本語・英語混在対応"
-	@echo "  - VS Code 拡張機能との連携対応"
-	@echo "  - 安全性チェック機能内蔵"
+	@echo "  - LuaLaTeX(日本語) で設定してます"
+	@echo "  - VS Code LaTeX Workshop(.vscode/settings.jsonで設定できます)"
+	@echo "  - フォーマットはlatexindent.pl(.latexindent.yamlで設定できます)"
+	@echo "  - bibの追加は対話式で簡単ですが、デフォルトでbib全体のフィールドを使用するようにしています"
+	@echo "  - 生成されたPDFは$(BUILDDIR)/$(MAINPDF)にあります"
+	@echo "  - devcontainerで開いてもらえると便利です"
+	@echo "  - Makefileのコードが長くなってしまいましたが、機能は豊富です"
+	@echo "  - Makefileをカスタマイズしてもらっても大丈夫です"
+	@echo "  - テンプレートは$(TEMPLATEDIR)に自分で作成してもらっても大丈夫です(Makefileのコードも追加してください)"
+	@echo "  - $(SAMPLE_DIR)にファイルの例がありますので、参考にしてください"
+	@echo "  - なにか問題があれば、GitHubのIssueで報告をしてもらえると助かります"
 
 .PHONY : all dev clean fullclean fmtclean fmt bib fullbuild validate-vars \
 	create-bib add-bib add-book add-article add-online add-inbook add-manual \
-	add-thesis add-inproceedings view viewhelp show-bib search-bib help status
+	add-thesis add-inproceedings view viewhelp show-bib search-bib help status \
+	templates new-project
