@@ -66,8 +66,8 @@ all: validate-vars
 
 # 文献データベース（.bib）を処理  
 bib: validate-vars
-    @echo "📚 文献データベースを処理中..."
-    @if [ -f "$(BIBFILE)" ]; then \
+	@echo "📚 文献データベースを処理中..."
+	@if [ -f "$(BIBFILE)" ]; then \
         echo "  📖 $(BIBFILE) が見つかりました"; \
         if [ -f "$(MAINBCF)" ]; then \
             biber $(BUILDDIR)/$(MAINTEXNAME); \
@@ -166,8 +166,8 @@ fmtclean: validate-vars
 
 # テンプレートから新しいプロジェクトを作成
 new-project: validate-vars
-    @echo "📝 新しいプロジェクトを作成します"
-    @if [ ! -d "$(TEMPLATESDIR)" ]; then \
+	@echo "📝 新しいプロジェクトを作成します"
+	@if [ ! -d "$(TEMPLATESDIR)" ]; then \
         echo "⚠️  $(TEMPLATESDIR)/ ディレクトリが存在しません"; \
         echo "💡 基本的なテンプレートを作成しますか？"; \
         read -p "作成する場合は y を入力: " create; \
@@ -179,11 +179,11 @@ new-project: validate-vars
             exit 1; \
         fi; \
     fi
-    @echo "利用可能なテンプレート:"
-    @echo "  1. with-bib    - 文献管理対応テンプレート"
-    @echo "  2. simple      - シンプルテンプレート（文献なし）"
-    @echo "  3. academic    - 学術論文テンプレート"
-    @read -p "テンプレートを選択してください (1-3): " choice; \
+	@echo "利用可能なテンプレート:"
+	@echo "  1. with-bib    - 文献管理対応テンプレート"
+	@echo "  2. simple      - シンプルテンプレート（文献なし）"
+	@echo "  3. academic    - 学術論文テンプレート"
+	@read -p "テンプレートを選択してください (1-3): " choice; \
     case $$choice in \
         1) if [ -f "$(TEMPLATESDIR)/template-with-bib.tex" ]; then \
                cp $(TEMPLATESDIR)/template-with-bib.tex $(TEXFILE).tex && \
