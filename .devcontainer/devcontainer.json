@@ -1,8 +1,8 @@
 {
   "name": "biblatex-python",
-  "build": {
-    "dockerfile": "Dockerfile"
-  },
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "latex",
+  "workspaceFolder": "/workspace",
   "features": {
     "ghcr.io/devcontainers/features/common-utils:2": {}
   },
@@ -12,8 +12,10 @@
         "ms-python.python",
         "ms-toolsai.jupyter",
         "James-Yu.latex-workshop",
-        "GitHub.copilot"
+        "GitHub.copilot",
+        "ms-vscode.vscode-json"
       ]
     }
-  }
+  },
+  "remoteUser": "vscode"
 }

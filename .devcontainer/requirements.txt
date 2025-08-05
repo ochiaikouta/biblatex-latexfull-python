@@ -1,3 +1,5 @@
+# Pythonのほしいパッケージをここに記述します
+# 例: numpy, scipy, matplotlib, jupyter
 numpy
 scipy
 matplotlib

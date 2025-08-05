@@ -1,0 +1,10 @@
+services:
+  latex:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    user: vscode
+    volumes:
+      - ..:/workspace
+    working_dir: /workspace
+    tty: true  
