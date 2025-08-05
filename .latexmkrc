@@ -1,6 +1,6 @@
 $out_dir = 'build';
-$pdf_mode = 4;  # LuaLaTeXを使用
-$bibtex_use = 2;
+$pdf_mode = 4;  # LuaLaTeX使用
+$bibtex_use = 2;  # Biber使用
 
 # LuaLaTeX コマンドを明示的に定義
 $lualatex = 'lualatex -interaction=nonstopmode -file-line-error -shell-escape -synctex=1 %O %S';
