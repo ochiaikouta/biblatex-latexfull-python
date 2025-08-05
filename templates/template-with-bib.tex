@@ -1,0 +1,28 @@
+\documentclass{ltjsarticle}
+\usepackage{luatexja}
+\usepackage{amsmath}
+\usepackage[backend=biber,style=numeric,sorting=nyt,language=auto,autolang=other]{biblatex}
+\addbibresource{../tex/refs.bib}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue, citecolor=blue}
+
+\title{文献管理対応テンプレート}
+\author{Your Name}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{概要}
+この文書は文献管理機能を使用します。例として\cite{fujita2020}を参照しています。
+
+\section*{内容}
+ここに本文を記述してください。文献を引用する場合は\verb|\cite{key}|を使用します。
+
+\section*{結論}
+BibLaTeX + Biberによる文献管理が正常に動作しています。
+
+\printbibliography[title=参考文献]
+
+\end{document}
