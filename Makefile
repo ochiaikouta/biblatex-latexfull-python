@@ -32,17 +32,22 @@ fmt:
 clean:
 	@echo "🧹 一時ファイルを削除中..."
 	$(LATEX) -c $(TEXFILE)
-	# latexmkが削除し忘れることがあるファイルを手動削除
-	-rm -f $(BUILDDIR)/*.run.xml $(BUILDDIR)/*.synctex.gz
-	-rm -rf $(BUILDDIR)/sections
+	@echo "  🔍 追加の一時ファイルを検索・削除中..."
+	@find $(BUILDDIR) -name "*.run.xml" -delete 2>/dev/null || true
+	@find $(BUILDDIR) -name "*.synctex.gz" -delete 2>/dev/null || true
+	@find $(BUILDDIR) -type d -name "sections" -exec rm -rf {} + 2>/dev/null || true
+	@echo "  ✅ 一時ファイルの削除完了"
 
 # 生成ファイルを完全削除（PDFも含む）
 fullclean:
 	@echo "🧹 すべての生成ファイルを削除中..."
 	$(LATEX) -C $(TEXFILE)
-	# 確実にすべての生成ファイルを削除
-	-rm -f $(BUILDDIR)/*.run.xml $(BUILDDIR)/*.synctex.gz $(BUILDDIR)/*.pdf
-	-rm -rf $(BUILDDIR)/sections
+	@echo "  🔍 すべての生成ファイルを検索・削除中..."
+	@find $(BUILDDIR) -name "*.run.xml" -delete 2>/dev/null || true
+	@find $(BUILDDIR) -name "*.synctex.gz" -delete 2>/dev/null || true
+	@find $(BUILDDIR) -name "*.pdf" -delete 2>/dev/null || true
+	@find $(BUILDDIR) -type d -name "sections" -exec rm -rf {} + 2>/dev/null || true
+	@echo "  ✅ すべてのファイルの削除完了"
 
 # バックアップファイルを削除
 fmtclean:
