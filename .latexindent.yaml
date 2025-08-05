@@ -118,7 +118,7 @@ backupExtension: .bak
 onlyOneBackUp: 0
 maxNumberOfBackUps: 5
 cycleThroughBackUps: 1
-backupDirectory: /workspace/.backups/
+backupDirectory: .backups/
 
 # または絶対パス指定
 
