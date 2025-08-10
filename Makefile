@@ -2,8 +2,8 @@ SHELL := /bin/bash
 # =============================================================================
 # 設定変数
 # =============================================================================
-TEXFILE := tex/main #消す
-MAINTEX := main
+TEXFILE := main 
+MAINTEX := main #消す
 SUBFILES := $(wildcard tex/sections/*.tex)
 LATEX := latexmk
 TEXDIR := tex
@@ -73,8 +73,8 @@ bib: validate-vars
 	@echo "📚 文献データベースを処理中... (upBibTeX)"
 	@if [ -n "$(BIBFILES)" ] && [ -f "$(BIBFILES)" ]; then \
 		echo "  📖 $(BIBFILES) が見つかりました"; \
-		if [ -f "$(TEXDIR)/$(MAINTEXNAME).aux" ]; then \
-			(cd $(TEXDIR) && upbibtex $(MAINTEXNAME)); \
+		if [ -f "$(TEXDIR)/$(TEXFILE).aux" ]; then \
+			(cd $(TEXDIR) && upbibtex $(TEXFILE)); \
 		else \
 			echo "  ℹ️  先に 'make build' で .aux を生成してください"; \
 		fi; \
@@ -90,7 +90,7 @@ f-build: validate-vars
 	$(LATEX) "$(TEXFILE)"
 	@if [ -n "$(BIBFILES)" ] && [ -f "$(BIBFILES)" ]; then \
 		echo "  📚 文献データベースを処理中... (upBibTeX)"; \
-		(cd $(TEXDIR) && upbibtex $(MAINTEXNAME)) || true; \
+		(cd $(TEXDIR) && upbibtex $(TEXFILE)) || true; \
 		echo "  🔄 最終ビルド中..."; \
 		$(LATEX) "$(TEXFILE)"; \
 	else \
