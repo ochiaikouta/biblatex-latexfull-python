@@ -7,15 +7,14 @@ MAINTEX := main
 SUBFILES := $(wildcard tex/sections/*.tex)
 LATEX := latexmk
 BUILDDIR := tex
+TEXDIR := tex
 
 # 文献管理関連
 DEFAULT_BIBFILE := refs 
 # 自動検索用のBIBFILES（tex/ディレクトリ内のすべての.bibファイル）
 BIBFILES ?= $(shell find $(TEXDIR) -name "*.bib" 2>/dev/null | tr '\n' ' ')
-TEXDIR := tex
+
 SECTIONSDIR := $(TEXDIR)/sections
-TEMPLATESDIR := templates
-SAMPLE_DIR := samples
 BACKUPDIR := .backups
 
 # ビルド関連の派生変数
@@ -158,7 +157,7 @@ c-project:
 	@echo "🔍 現在の設定:"
 	@echo "  作成先: $(TEXFILE).tex"
 	@echo "  文献ファイル: $(BIBFILES)"
-	@echo "  テンプレートディレクトリ: $(TEMPLATESDIR)"
+	@echo "  テンプレートディレクトリ: $(TEMPLATE_DIR)"
 	@echo ""
 	@if [ -f "$(TEXFILE).tex" ]; then \
         echo "⚠️  $(TEXFILE).tex が既に存在します"; \
@@ -173,13 +172,13 @@ c-project:
         mkdir -p $(TEXDIR); \
         echo "✅ $(TEXDIR)/ ディレクトリを作成しました"; \
     fi
-	@if [ ! -d "$(TEMPLATESDIR)" ]; then \
-        echo "⚠️  $(TEMPLATESDIR)/ ディレクトリが存在しません"; \
+	@if [ ! -d "$(TEMPLATE_DIR)" ]; then \
+        echo "⚠️  $(TEMPLATE_DIR)/ ディレクトリが存在しません"; \
         echo "💡 基本的なテンプレートを作成しますか？"; \
         read -p "作成する場合は y を入力: " create; \
         if [ "$$create" = "y" ] || [ "$$create" = "Y" ]; then \
-            mkdir -p $(TEMPLATESDIR); \
-            echo "📁 $(TEMPLATESDIR)/ ディレクトリを作成しました"; \
+            mkdir -p $(TEMPLATE_DIR); \
+            echo "📁 $(TEMPLATE_DIR)/ ディレクトリを作成しました"; \
         else \
             echo "❌ 操作をキャンセルしました"; \
             exit 1; \
@@ -240,7 +239,7 @@ l-tmp:
 	@echo "📋 利用可能なテンプレート:"
 	@echo ""
 	@echo "LaTeXテンプレート:"
-	@ls -la $(TEMPLATESDIR)/template-*.tex 2>/dev/null || echo "  (未作成)"
+	@ls -la $(TEMPLATE_DIR)/template-*.tex 2>/dev/null || echo "  (未作成)"
 	@echo ""
 	@echo "💡 文献テンプレートはMakefileに統合済みです。"
 	@echo "   文献追加: make a-bib"
