@@ -1,5 +1,7 @@
 # Dev Container + upLaTeX + upBibTeX + Python
 
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/ochiaikouta/uplatex-upbibtex-devcontainer-ja)
+
 >upLaTeX + upBibTeX + VS Code (LaTeX Workshop) による日本語テンプレートです。  Dev Container / Codespaces で即利用できます。
 
 **ベースイメージ**: [Paperist/texlive-ja](https://github.com/Paperist/texlive-ja.git)
@@ -16,6 +18,27 @@
 - **Dev Container/Codespaces** - すぐに利用可能
 - **latexmk設定** - `.latexmkrc`と`Makefile`によるラッパー（Lualatexなどにも変更可能）
 - **latexindent** - LaTeXコードのフォーマッター
+
+---
+
+## 📥 セットアップ
+
+### 1. リポジトリをクローン
+
+```bash
+# HTTPS
+git clone https://github.com/ochiaikouta/uplatex-upbibtex-devcontainer-ja.git
+cd uplatex-upbibtex-devcontainer-ja
+```
+```bash
+# SSH（推奨）
+git clone git@github.com:ochiaikouta/uplatex-upbibtex-devcontainer-ja.git
+cd uplatex-upbibtex-devcontainer-ja
+```
+
+### 2. Dev Container で開く
+
+VS Code でフォルダを開き、「`Reopen in Container`」を選択します。
 
 ---
 
