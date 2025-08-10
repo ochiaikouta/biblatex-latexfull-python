@@ -2,25 +2,22 @@ SHELL := /bin/bash
 # =============================================================================
 # 設定変数
 # =============================================================================
-TEXFILE := main 
-MAINTEX := main #消す
-SUBFILES := $(wildcard tex/sections/*.tex)
 LATEX := latexmk
+TEXFILE := main
 TEXDIR := tex
+SECTIONSDIR := sections
+SUBFILES := $(wildcard $(TEXDIR)/$(SECTIONSDIR)/*.tex)
+
 
 # デフォルトの文献ファイル名
-DEFAULT_BIBFILE := refs 
+DEFAULT_BIBFILE := refs
 # 自動検索用のBIBFILES（tex/ディレクトリ内のすべての.bibファイル）
 BIBFILES ?= $(shell find $(TEXDIR) -name "*.bib" 2>/dev/null | tr '\n' ' ')
 
-SECTIONSDIR := $(TEXDIR)/sections
+# latexindentのバックアップディレクトリ
 BACKUPDIR := .backups
 
-# ビルド関連の派生変数
-MAINTEXNAME := $(notdir $(TEXFILE))
-MAINPDF := $(TEXDIR)/$(MAINTEXNAME).pdf
-MAINBCF := $(TEXDIR)/$(MAINTEXNAME).bcf
-MAINBBL := $(TEXDIR)/$(MAINTEXNAME).bbl
+# latexindentの設定ファイル
 INDENT_CONFIG := .indentconfig.yaml
 
 # テンプレート
@@ -193,7 +190,7 @@ c-project:
 	@read -p "テンプレートを選択してください (1-4): " choice; \
     case $$choice in \
         1) if [ -f "$(TEMPLATE_W)" ]; then \
-               cp $(TEMPLATE_W) $(TEXFILE).tex && \
+               cp $(TEMPLATE_W) $(TEXDIR)/$(TEXFILE).tex && \
                echo "✅ 文献管理テンプレートを設定しました" && \
                $(MAKE) --no-print-directory c-bib && \
                echo "📚 文献ファイルも自動作成しました"; \
@@ -201,13 +198,13 @@ c-project:
                echo "❌ $(TEMPLATE_W) が見つかりません"; \
            fi;; \
         2) if [ -f "$(TEMPLATE_S)" ]; then \
-               cp $(TEMPLATE_S) $(TEXFILE).tex && \
+               cp $(TEMPLATE_S) $(TEXDIR)/$(TEXFILE).tex && \
                echo "✅ シンプルテンプレートを設定しました"; \
            else \
                echo "❌ $(TEMPLATE_S) が見つかりません"; \
            fi;; \
         3) if [ -f "$(TEMPLATE_A)" ]; then \
-               cp $(TEMPLATE_A) $(TEXFILE).tex && \
+               cp $(TEMPLATE_A) $(TEXDIR)/$(TEXFILE).tex && \
                echo "✅ 学術論文テンプレートを設定しました" && \
                $(MAKE) --no-print-directory c-bib && \
                echo "📚 文献ファイルも自動作成しました"; \
@@ -215,7 +212,7 @@ c-project:
                echo "❌ $(TEMPLATE_A) が見つかりません"; \
            fi;; \
         4) if [ -f "$(TEMPLATE_M)" ]; then \
-               cp $(TEMPLATE_M) $(TEXFILE).tex && \
+               cp $(TEMPLATE_M) $(TEXDIR)/$(TEXFILE).tex && \
                echo "✅ 最小テンプレートを設定しました"; \
            else \
                echo "❌ $(TEMPLATE_M) が見つかりません"; \
