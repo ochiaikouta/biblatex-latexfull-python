@@ -1,0 +1,82 @@
+paths:
+  - /workspace
+  - /workspace/tex
+
+defaultIndent: '  '
+indentPreamble: 1
+
+indentRules:
+  document: '  '
+  itemize:  '  '
+  enumerate: '  '
+  description: '  '
+  verbatim: 0
+  lstlisting: 0
+
+modifyLineBreaks:
+  blankLinesBeforeSectioning: 1
+  blankLinesAfterSectioning: 1
+
+  commands:
+    \section:
+      NumberOfArguments: 1
+      CommandNameFinishesWithLineBreak: 1
+      ArgumentsFinishWithLineBreak: 2
+    \section\*:
+      NumberOfArguments: 1
+      CommandNameFinishesWithLineBreak: 1
+      ArgumentsFinishWithLineBreak: 2
+    \subsection:
+      NumberOfArguments: 1
+      CommandNameFinishesWithLineBreak: 1
+      ArgumentsFinishWithLineBreak: 2
+    \subsection\*:
+      NumberOfArguments: 1
+      CommandNameFinishesWithLineBreak: 1
+      ArgumentsFinishWithLineBreak: 2
+    \subsubsection:
+      NumberOfArguments: 1
+      CommandNameFinishesWithLineBreak: 1
+      ArgumentsFinishWithLineBreak: 2
+    \subsubsection\*:
+      NumberOfArguments: 1
+      CommandNameFinishesWithLineBreak: 1
+      ArgumentsFinishWithLineBreak: 2
+
+lookForAlignDelims:
+  tabular:
+    delims: 1
+    alignDoubleBackSlash: 1
+    spacesBeforeDoubleBackSlash: 1
+    delimiterRegEx: '(?<!\\)&'
+  array:
+    delims: 1
+    alignDoubleBackSlash: 1
+    spacesBeforeDoubleBackSlash: 1
+  align:
+    delims: 1
+    alignDoubleBackSlash: 1
+    spacesBeforeDoubleBackSlash: 1
+  alignat:
+    delims: 1
+  gather:
+    delims: 0
+  equation:
+    delims: 0
+
+removeTrailingWhitespace: 1
+preserveBlankLines: 1           
+condenseMultipleBlankLinesInto: 1
+
+backupExtension: .bak
+onlyOneBackUp: 0
+maxNumberOfBackUps: 5
+cycleThroughBackUps: 1
+backupDirectory: .backups/
+
+logFilePreferences:
+  showEveryYamlRead: 0
+  showAmalgamatedSettings: 0
+  showDecorationStartCodeBlockTrace: 0
+  showDecorationFinishCodeBlockTrace: 0
+  showGitHubInfoFooter: 0

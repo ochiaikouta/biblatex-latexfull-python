@@ -1,10 +1,11 @@
 services:
-  latex:
+  uplatex-python:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: uplatex-python
     user: vscode
     volumes:
       - ..:/workspace
     working_dir: /workspace
-    tty: true  
+    tty: true

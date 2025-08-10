@@ -1,21 +1,38 @@
 {
-  "name": "biblatex-python",
+  "name": "uplatex-python",
   "dockerComposeFile": "docker-compose.yml",
-  "service": "latex",
-  "workspaceFolder": "/workspace",
+  "service": "uplatex-python",
+    "workspaceFolder": "/workspace",
+  "remoteUser": "vscode",
   "features": {
     "ghcr.io/devcontainers/features/common-utils:2": {}
   },
   "customizations": {
     "vscode": {
       "extensions": [
+        "James-Yu.latex-workshop",
         "ms-python.python",
         "ms-toolsai.jupyter",
-        "James-Yu.latex-workshop",
         "GitHub.copilot",
-        "ms-vscode.vscode-json"
-      ]
+        "ms-vscode.vscode-json",
+        "eamodio.gitlens"
+      ],
+      "settings": {
+        "jupyter.kernels.trusted": [
+          "python3"
+        ],
+        "jupyter.kernelCompletionTriggerCharacters": [],
+        "jupyter.interactiveWindow.creationMode": "perFile",
+        "jupyter.askForKernelRestart": true,
+        "jupyter.enableAutoMatcher": false,
+        "jupyter.kernelSpecManager": "local",
+        "jupyter.notebookFileRoot": "${workspaceFolder}",
+        "jupyter.interactiveWindow.textEditor.executeSelection": true,
+        "jupyter.output.smartScroll": true
+      }
     }
   },
-  "remoteUser": "vscode"
+  "containerEnv": {
+    "LATEXINDENT_CONFIG": "/workspace/.indentconfig.yaml"
+  }
 }

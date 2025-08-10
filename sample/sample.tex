@@ -1,0 +1,34 @@
+% このtexファイルはサンプルです。
+\documentclass[uplatex]{jsarticle}
+\usepackage{amsmath}
+% 参考文献: upBibTeX + jplain.bst
+\usepackage{cite}
+% クリック可能リンク (uplatex + dvipdfmx)
+\usepackage[dvipdfmx,unicode,bookmarks=true]{hyperref}
+\usepackage{pxjahyper}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  urlcolor=blue,
+  citecolor=blue,
+  bookmarksnumbered=true
+}
+
+\title{upLaTeX + upBibTeX + jplain.bst テンプレート}
+\author{山田太郎}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{概要}
+この文書は\cite{fujita2020} に基づき、upBibTeX + jplain による文献管理を説明する。
+
+\section*{結論}
+Biber を使えば文献の柔軟な出力が可能である。
+
+\bibliographystyle{jplain}
+\bibliography{refs}
+
+\end{document}

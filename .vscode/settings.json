@@ -15,33 +15,39 @@
   "latex-workshop.latex.recipes": [
     {
       "name": "Make Dev (Format + Build)",
-      "tools": ["make-dev"]
+      "tools": [
+        "make-dev"
+      ]
     }
   ],
   "latex-workshop.latex.recipe.default": "Make Dev (Format + Build)",
   "latex-workshop.view.pdf.viewer": "tab",
-  
   // VS Code の独自処理を無効化し、完全に Makefile に任せる
   "latex-workshop.latex.build.forceRecipeUsage": true,
   "latex-workshop.latex.autoClean.run": "never",
   "latex-workshop.latex.autoBuild.run": "never",
-  
   "latex-workshop.latex.rootFile.doNotPrompt": true,
   "latex-workshop.latex.rootFile.useSubFile": false,
-  
   "latex-workshop.synctex.afterBuild.enabled": true,
-  
-  "latex-workshop.latex.search.rootFiles.include": ["tex/*.tex"],
-  "latex-workshop.latex.search.rootFiles.exclude": ["**/build/**"],
-  
-  // LaTeX フォーマット設定（make dev が latexindent を実行するので補完的に設定）
+  // 検索パスを実際の構成に合わせて修正
+  "latex-workshop.latex.search.rootFiles.include": [
+    "tex/*.tex"
+  ],
+  "latex-workshop.latex.search.rootFiles.exclude": [
+    "**/.backups/**",
+    "**/templates/**",
+    "**/sample/**"
+  ],
+  // LaTeX フォーマット設定
   "latex-workshop.formatting.latex": "latexindent",
   "latex-workshop.formatting.latexindent.path": "latexindent",
   "latex-workshop.formatting.latexindent.args": [
+    "-m",
+    "-y=.indentconfig.yaml",
     "-c=%DIR%/",
     "%TMPFILE%"
   ],
-  
+
   // 保存時の自動フォーマットは make dev に任せるため無効化
   "[latex]": {
     "editor.formatOnSave": false,

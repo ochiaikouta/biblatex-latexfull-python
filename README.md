@@ -1,117 +1,161 @@
-# LaTeX + Python レポートテンプレート（BibLaTeX 日本語対応, Codespaces対応）
+# Dev Container + upLaTeX + upBibTeX + Python
 
-LuaLaTeX + BibLaTeX + Biber + Python（numpy, matplotlib等）+ VS Code (LaTeX Workshop拡張) に対応した、日本語論文・レポート用テンプレートです。  
-**GitHub Codespaces** で即使える開発環境も同梱しています。
+>upLaTeX + upBibTeX + VS Code (LaTeX Workshop) による日本語テンプレートです。  Dev Container / Codespaces で即利用できます。
+
+**ベースイメージ**: [Paperist/texlive-ja](https://github.com/Paperist/texlive-ja.git)
 
 ---
 
 ## ✅ 特徴
 
-- LuaLaTeX + BibLaTeX（和文参考文献スタイル `jecon` 使用）
-- Python（numpy, matplotlib, jupyter等）も同時に使える
-- requirements.txt でPythonパッケージ管理
-- VS Code の拡張機能 [LaTeX Workshop](https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop) に最適化済み
-- GitHub Codespaces対応（`.devcontainer`ディレクトリ同梱）
-- `Makefile` ＆ `build.sh` によるCLIビルドも対応
-- 図やセクションの分割管理が可能な `figures/`, `sections/` フォルダ付き
-- `.latexmkrc` 同梱で `latexmk` による快適ビルド
-- `.vscode/settings.json` により保存時自動ビルドが即使える
+- **upLaTeX + upBibTeX** - 日本語LaTeXの標準環境
+- **自動文献検索** - `tex/`ディレクトリ内の`.bib`ファイルを自動検出
+- **Bibファイル管理** - ターミナルで簡単に追加・作成・検索
+- **Python科学計算環境** - numpy, matplotlib, jupyter, pandas, scipy 等
+- **VS Code LaTeX Workshop** - [James-Yu/LaTeX-Workshop](https://github.com/James-Yu/LaTeX-Workshop) に最適化
+- **Dev Container/Codespaces** - すぐに利用可能
+- **latexmk設定** - `.latexmkrc`と`Makefile`によるラッパー（Lualatexなどにも変更可能）
+- **latexindent** - LaTeXコードのフォーマッター
 
 ---
 
 ## 🚀 クイックスタート
 
-### 1. GitHub Codespacesで開く（推奨）
+### 1. Dev Container/Codespaces で開く（推奨）
 
-- 「Use this template」からリポジトリを作成し、Codespacesで開くだけでLaTeXとPython環境が自動でセットアップされます。
+- VS Code で「`Reopen in Container`」または Codespaces で起動します。
 
-### 2. ローカルで使う場合
-
-```bash
-git clone https://github.com/ochiaikouta/biblatex-latexfull-python.git
-cd biblatex-japanese-template
-# Pythonパッケージのインストール
-pip install -r requirements.txt
-```
-
-### 3. PDFをビルド
-
-#### VS Code で
-
-- LaTeX Workshop 拡張を入れて `.tex` を開いて保存するだけでPDFが生成されます（自動ビルド設定済み）
-
-#### CLIで
+### 2. Makefile を使う（tex/ 配下にプロジェクト作成）
 
 ```bash
-make           # PDFをビルド
-make bib       # biberだけ走らせたいとき
-make clean     # 中間ファイルを削除
-make fullclean # PDFや.bblも含めて完全削除
-make watch     # 自動で再ビルド（latexmk -pvc）
-make view      # PDFを開く（Linuxならxdg-open）
-make help      # ヘルプを表示（使い方一覧）
+make c-project   # テンプレートからtex/main.texを作成
+make dev         # フォーマット → 完全ビルド
+make view        # PDF を開く
 ```
 
 ---
 
-## ✅ 依存環境（例）
+## 📚 文献管理
 
-- TeX Live 2023 以上（LuaLaTeX 対応済み）
-- `latexmk`, `biber`
-- Python 3.11 以上（numpy, matplotlib, jupyter等）
-- VS Code + LaTeX Workshop 拡張
-- GitHub Codespaces（推奨）
+### 自動検索機能
+- `tex/`ディレクトリ内の`.bib`ファイルを自動検出
+- 複数の`.bib`ファイルを同時に使用可能
+- 設定不要で利用可能
+
+### 使用方法
+
+#### 1. 自動検知 
+
+Makeコマンドに含まれています。`workspace/`で
+```bash
+# tex/*.bib を自動検出して処理
+make bib
+```
+```bash
+# いきなりbuildしても使えます
+make f-build
+make dev
+```
+
+#### 2. 読み込み
+
+`main.tex` 内で複数の`.bib`ファイルを指定してください(`a.bib`, `b.bib`, ...)
+```latex
+% texファイル内で指定
+\bibliography{a, b}
+```
+
+
+
+---
+
+## 🛠️ 主なコマンド一覧
+
+```bash
+# 基本ビルド
+make build     # LaTeX文書をビルド
+make f-build   # 文献処理も含む完全ビルド（upBibTeX）
+make bib       # 文献のみ処理（upBibTeX）
+
+# Bibファイル
+make a-bib     # Bibファイルに追加
+make c-bib     # Bibファイルを作成
+make l-bib     # Bibファイルの中身を確認
+make s-bib     # Bibファイルを検索
+
+# クリーンアップ
+make clean     # 中間ファイルを削除
+make f-clean   # 生成物も含めて完全削除
+
+# フォーマット
+make fmt       # LaTeX整形（latexindent）
+
+# プロジェクト管理
+make c-project # テンプレートから新プロジェクト作成
+make dev       # フォーマット → 完全ビルド
+make view      # PDF を開く
+make status    # プロジェクト状況を表示
+
+# ヘルプ
+make help      # ヘルプ表示
+```
+---
+
+## ✅ 依存環境
+
+- **TeX Live**（upLaTeX, upBibTeX, dvipdfmx）
+- **latexmk** - LaTeXビルド自動化
+- **Make** - ビルド・管理コマンド
+- **Python 3.x**（numpy, matplotlib, jupyter, pandas, scipy など）
+- **VS Code + LaTeX Workshop** 拡張
+- **Dev Container/Codespaces**（推奨）
 
 ---
 
 ## 📂 ディレクトリ構成
 
-```
+```bash
 .
-├── main.tex            # メインのLaTeXファイル
-├── refs.bib            # 参考文献（BibLaTeX + Biber形式）
-├── sections/           # セクション分割用ファイル
-│   └── section1.tex
-├── figures/            # 画像格納フォルダ
-│   └── sample.png
-├── notebooks/          # Jupyter Notebook用フォルダ ← 追加
-│   └── sample.ipynb
-├── .latexmkrc          # latexmk用設定
-├── .vscode/settings.json  # LaTeX Workshop用のビルド設定（LuaLaTeX対応済）
-├── Makefile            # makeコマンドでのビルド操作
-├── build.sh            # シェルスクリプトビルド用（オプション）
-├── requirements.txt    # Pythonパッケージ管理用ファイル
-├── .devcontainer/      # GitHub Codespaces用設定
+├── sample/ # 独立サンプル（参考用）
+│ ├── sample.tex
+│ └── refs.bib
+├── tex/ # 本番用LaTeX（make対象）
+│ ├── figures/ # 画像ファイル
+│ └── section/ # セクションファイル
+├── templates/ # upLaTeX テンプレート
+│ ├── template-minimal.tex
+│ ├── template-simple.tex
+│ ├── template-with-bib.tex
+│ └── template-academic.tex
+├── .latexmkrc # upLaTeX + upBibTeX 設定
+├── .indentconfig.yaml # latexindent 設定
+├── Makefile # ビルド/整形/文献管理
+├── .devcontainer/ # Dev Container 設定
+│ ├── Dockerfile
+│ ├── docker-compose.yml
+│ ├── devcontainer.json
+│ └── requirements.txt # Python パッケージ
+├── .github/ # GitHub 設定
+│ ├── ISSUE_TEMPLATE/
+│ └── pull_request_template.md
+├── .vscode/ # VS Code 設定
+├── scripts/ # スクリプトファイル
+├── jupyter/ # Jupyter Notebook
+├── python/ # Python スクリプト
+├── .gitignore # Git 除外設定
+├── LICENSE # ライセンス情報
 └── README.md
 ```
 
 ---
 
-## 📝 使い方の補足
-
-### `figures/` の画像を使いたいとき
-
-```latex
-\usepackage{graphicx}
-...
-\includegraphics[width=\linewidth]{figures/sample.png}
-```
-
-### `sections/` に分けた `.tex` を使いたいとき
-
-```latex
-\input{sections/section1.tex}
-```
-
----
-
 ## 🧠 Tips
-
-- 日本語参考文献出力は `biblatex` + `biber` + `style=jecon` によって行われます。
-- `.vscode/settings.json` が含まれているので、**VS Code にクローンして開くだけで即LaTeX環境が整います。**
+### 技術的な詳細
+- latexmk は `.latexmkrc` で upLaTeX + upBibTeX に設定済み(Lualatexなどにも変更可能)
+- Dev Container は `make` をプリインストール済み
+- TeX Live の他に必要なパッケージは`Dockerfile`に追加してください
 
 ---
-
 ## 📜 ライセンス
 
 MIT
