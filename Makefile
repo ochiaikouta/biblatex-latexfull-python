@@ -2,14 +2,13 @@ SHELL := /bin/bash
 # =============================================================================
 # 設定変数
 # =============================================================================
-TEXFILE := tex/main
+TEXFILE := tex/main #消す
 MAINTEX := main
 SUBFILES := $(wildcard tex/sections/*.tex)
 LATEX := latexmk
-BUILDDIR := tex
 TEXDIR := tex
 
-# 文献管理関連
+# デフォルトの文献ファイル名
 DEFAULT_BIBFILE := refs 
 # 自動検索用のBIBFILES（tex/ディレクトリ内のすべての.bibファイル）
 BIBFILES ?= $(shell find $(TEXDIR) -name "*.bib" 2>/dev/null | tr '\n' ' ')
@@ -19,9 +18,9 @@ BACKUPDIR := .backups
 
 # ビルド関連の派生変数
 MAINTEXNAME := $(notdir $(TEXFILE))
-MAINPDF := $(BUILDDIR)/$(MAINTEXNAME).pdf
-MAINBCF := $(BUILDDIR)/$(MAINTEXNAME).bcf
-MAINBBL := $(BUILDDIR)/$(MAINTEXNAME).bbl
+MAINPDF := $(TEXDIR)/$(MAINTEXNAME).pdf
+MAINBCF := $(TEXDIR)/$(MAINTEXNAME).bcf
+MAINBBL := $(TEXDIR)/$(MAINTEXNAME).bbl
 INDENT_CONFIG := .indentconfig.yaml
 
 # テンプレート
@@ -37,8 +36,8 @@ DATE := $(shell date '+%Y-%m-%d')
 # 安全性チェック
 validate-vars:
 	@if [ -z "$(TEXFILE)" ]; then echo "❌ TEXFILE が設定されていません"; exit 1; fi
-	@if [ "$(BUILDDIR)" = "/" ] || [ "$(BUILDDIR)" = "." ] || [ "$(BUILDDIR)" = ".." ]; then \
-        echo "❌ 危険なビルドディレクトリ: $(BUILDDIR)"; exit 1; \
+	@if [ "$(TEXDIR)" = "/" ] || [ "$(TEXDIR)" = "." ] || [ "$(TEXDIR)" = ".." ]; then \
+        echo "❌ 危険なビルドディレクトリ: $(TEXDIR)"; exit 1; \
     fi
 	@if ! echo "$(TEXFILE)" | grep -q "^$(TEXDIR)/"; then \
         echo "❌ TEXFILEは$(TEXDIR)/で始まる必要があります: $(TEXFILE)"; exit 1; \
@@ -74,8 +73,8 @@ bib: validate-vars
 	@echo "📚 文献データベースを処理中... (upBibTeX)"
 	@if [ -n "$(BIBFILES)" ] && [ -f "$(BIBFILES)" ]; then \
 		echo "  📖 $(BIBFILES) が見つかりました"; \
-		if [ -f "$(BUILDDIR)/$(MAINTEXNAME).aux" ]; then \
-			(cd $(BUILDDIR) && upbibtex $(MAINTEXNAME)); \
+		if [ -f "$(TEXDIR)/$(MAINTEXNAME).aux" ]; then \
+			(cd $(TEXDIR) && upbibtex $(MAINTEXNAME)); \
 		else \
 			echo "  ℹ️  先に 'make build' で .aux を生成してください"; \
 		fi; \
@@ -91,7 +90,7 @@ f-build: validate-vars
 	$(LATEX) "$(TEXFILE)"
 	@if [ -n "$(BIBFILES)" ] && [ -f "$(BIBFILES)" ]; then \
 		echo "  📚 文献データベースを処理中... (upBibTeX)"; \
-		(cd $(BUILDDIR) && upbibtex $(MAINTEXNAME)) || true; \
+		(cd $(TEXDIR) && upbibtex $(MAINTEXNAME)) || true; \
 		echo "  🔄 最終ビルド中..."; \
 		$(LATEX) "$(TEXFILE)"; \
 	else \
@@ -788,10 +787,10 @@ status:
     else \
         echo "  文献ファイル: なし ℹ️"; \
     fi
-	@echo "  ビルド出力: $(BUILDDIR)/"
-	@if [ -d "$(BUILDDIR)" ]; then \
+	@echo "  ビルド出力: $(TEXDIR)/"
+	@if [ -d "$(TEXDIR)" ]; then \
         echo "  生成ファイル:"; \
-        ls -la $(BUILDDIR)/ | grep -E '\.(pdf|synctex\.gz)$$' || echo "    (PDFファイルなし)"; \
+        ls -la $(TEXDIR)/ | grep -E '\.(pdf|synctex\.gz)$$' || echo "    (PDFファイルなし)"; \
     else \
         echo "  (まだビルドされていません)"; \
     fi
@@ -851,7 +850,7 @@ help:
 	@echo "設定:"
 	@echo "  メインファイル: $(TEXFILE).tex"
 	@echo "  文献ファイル: $(BIBFILES)"
-	@echo "  ビルドディレクトリ: $(BUILDDIR)/"
+	@echo "  ビルドディレクトリ: $(TEXDIR)/"
 
 .PHONY : c-project help validate-vars build f-build dev clean f-clean d-back fmt bib \
 	c-bib a-bib l-bib s-bib a-book a-article a-online a-inbook a-manual \
