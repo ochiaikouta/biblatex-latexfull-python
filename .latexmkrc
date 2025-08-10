@@ -1,30 +1,29 @@
-$out_dir = 'build';
-$pdf_mode = 4;  # LuaLaTeX使用
-$bibtex_use = 2;  # Biber使用
+# upLaTeX + upBibTeX + jplain.bst 用の設定
 
-# LuaLaTeX コマンドを明示的に定義
-$lualatex = 'lualatex -interaction=nonstopmode -file-line-error -shell-escape -synctex=1 %O %S';
+# 出力先と動作モード
+$out_dir = 'tex';
+$aux_dir = 'tex';
+$pdf_mode = 3;
 
-# 入力ファイルの検索パスを設定
-$ENV{'TEXINPUTS'} = './tex//:' . ($ENV{'TEXINPUTS'} || '');
-$ENV{'BIBINPUTS'} = './tex//:' . ($ENV{'BIBINPUTS'} || '');
+# uplatex + dvipdfmx
+$latex = 'uplatex -kanji=utf8 -interaction=nonstopmode -file-line-error -synctex=1 %O %S';
+$dvipdf = 'dvipdfmx %O -o %D %S';
 
-@clean_ext = qw(
-  aux log toc out lot lof nav snm vrb xdv
-  synctex.gz bcf run.xml bbl blg
-  fls fdb_latexmk
-);
-@clean_full_ext = (@clean_ext, 'pdf');
+# upbibtex
+$bibtex_use = 1;
+$bibtex = 'upbibtex %O %B';
 
+# 環境変数
+$ENV{'TEXINPUTS'} = './//:' . ($ENV{'TEXINPUTS'} || '');
+$ENV{'BIBINPUTS'} = './//:' . ($ENV{'BIBINPUTS'} || '');
+
+# clean
+$clean_ext = 'aux log toc out lot lof nav snm vrb xdv synctex.gz bcf run.xml blg fls fdb_latexmk';
+$clean_full_ext = $clean_ext . ' pdf dvi bbl swp';
+
+# その他設定
 $preview_continuous_mode = 0;
 $silence_logfile_warnings = 1;
 $force_mode = 1;
-
-# SyncTeX を確実に生成
-$postscript_mode = 0;
-$dvi_mode = 0;
-
-# 同期ファイルを強制的に build に出力
 $synctex = 1;
-
-
+$recorder = 1;
