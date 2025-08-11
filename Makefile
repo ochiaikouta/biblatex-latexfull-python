@@ -3,34 +3,35 @@ SHELL := /bin/bash
 # 設定変数
 # =============================================================================
 LATEX := latexmk
-TEXFILE := main
 TEXDIR := tex
+MAIN := main
+TEXFILE := $(TEXDIR)/$(MAIN)
 SECTIONSDIR := sections
 SUBFILES := $(wildcard $(TEXDIR)/$(SECTIONSDIR)/*.tex)
 
+# PDFの場所（latexmk -cd を使う想定）
+MAINPDF := $(TEXFILE).pdf
 
-# デフォルトの文献ファイル名
+# 文献
 DEFAULT_BIBFILE := refs
-# 自動検索用のBIBFILES（tex/ディレクトリ内のすべての.bibファイル）
-BIBFILES ?= $(shell find $(TEXDIR) -name "*.bib" 2>/dev/null | tr '\n' ' ')
+BIBFILES ?= $(shell find $(TEXDIR) -maxdepth 2 -name "*.bib" 2>/dev/null)
 
-# latexindentのバックアップディレクトリ
+# latexindent
 BACKUPDIR := .backups
-
-# latexindentの設定ファイル
 INDENT_CONFIG := .indentconfig.yaml
 
-# テンプレート
+# テンプレ
 TEMPLATE_DIR := templates
 TEMPLATE_A := $(TEMPLATE_DIR)/template-academic.tex
 TEMPLATE_S := $(TEMPLATE_DIR)/template-simple.tex
 TEMPLATE_W := $(TEMPLATE_DIR)/template-with-bib.tex
 TEMPLATE_M := $(TEMPLATE_DIR)/template-minimal.tex
 
-# 日付フォーマット
 DATE := $(shell date '+%Y-%m-%d')
 
+# =============================================================================
 # 安全性チェック
+# =============================================================================
 validate-vars:
 	@if [ -z "$(TEXFILE)" ]; then echo "❌ TEXFILE が設定されていません"; exit 1; fi
 	@if [ "$(TEXDIR)" = "/" ] || [ "$(TEXDIR)" = "." ] || [ "$(TEXDIR)" = ".." ]; then \
@@ -41,13 +42,11 @@ validate-vars:
     fi
 	@if [ ! -d "$(TEXDIR)" ]; then \
         echo "❌ $(TEXDIR)ディレクトリが存在しません"; \
-        echo "💡 以下のコマンドで作成してください:"; \
         echo "   mkdir -p $(TEXDIR)"; \
         exit 1; \
     fi
 	@if [ ! -f "$(TEXFILE).tex" ]; then \
         echo "❌ LaTeXファイルが存在しません: $(TEXFILE).tex"; \
-        echo "💡 以下のファイルを作成してください:"; \
         echo "   touch $(TEXFILE).tex"; \
         exit 1; \
     fi
@@ -57,46 +56,43 @@ validate-vars:
     fi
 
 # =============================================================================
-# ビルド関連
+# ビルド
 # =============================================================================
 
-# デフォルトターゲット：PDFをビルド
+
 build: validate-vars
 	@echo "🚀 ビルド開始: $(TEXFILE).tex"
 	$(LATEX) "$(TEXFILE)"
 
-# 文献データベース（.bib）を処理  
+# 文献処理（BIBFILESが1つでもあればOK）
 bib: validate-vars
 	@echo "📚 文献データベースを処理中... (upBibTeX)"
-	@if [ -n "$(BIBFILES)" ] && [ -f "$(BIBFILES)" ]; then \
-		echo "  📖 $(BIBFILES) が見つかりました"; \
-		if [ -f "$(TEXDIR)/$(TEXFILE).aux" ]; then \
-			(cd $(TEXDIR) && upbibtex $(TEXFILE)); \
+	@hasbib=false; for b in $(BIBFILES); do [ -f "$$b" ] && hasbib=true && break; done; \
+	if $$hasbib; then \
+		if [ -f "$(TEXFILE).aux" ]; then \
+			( cd $(TEXDIR) && upbibtex $(MAIN) ); \
 		else \
 			echo "  ℹ️  先に 'make build' で .aux を生成してください"; \
 		fi; \
 	else \
 		echo "  ℹ️  .bibファイルが見つかりません。文献処理をスキップします"; \
-		echo "  💡 tex/ディレクトリに.bibファイルを作成するか、BIBFILES=...で指定してください"; \
+		echo "  💡 $(TEXDIR)/ に .bib を作成するか、BIBFILES=...で指定してください"; \
 	fi
 
-# 完全ビルド（文献処理も含む）
 f-build: validate-vars
 	@echo "🚀 完全ビルド開始..."
-	@echo "  📄 初回ビルド中..."
 	$(LATEX) "$(TEXFILE)"
-	@if [ -n "$(BIBFILES)" ] && [ -f "$(BIBFILES)" ]; then \
-		echo "  📚 文献データベースを処理中... (upBibTeX)"; \
-		(cd $(TEXDIR) && upbibtex $(TEXFILE)) || true; \
-		echo "  🔄 最終ビルド中..."; \
-		$(LATEX) "$(TEXFILE)"; \
+	@hasbib=false; for b in $(BIBFILES); do [ -f "$$b" ] && hasbib=true && break; done; \
+	if $$hasbib; then \
+		echo "  📚 upBibTeX 実行"; \
+		( cd $(TEXDIR) && upbibtex $(MAIN) ) || true; \
+		echo "  🔄 最終ビルド"; \
+		$(LATEX) -gg -silent -halt-on-error "$(TEXFILE)"; \
 	else \
-		echo "  ℹ️  .bibファイルがないため文献処理をスキップしました"; \
-		echo "  💡 tex/ディレクトリに.bibファイルを作成するか、BIBFILES=...で指定してください"; \
+		echo "  ℹ️ .bib が無いので文献処理はスキップ"; \
 	fi
-	@echo "✅ 完全ビルド完了!"
+	@echo "✅ 完了!"
 
-# 開発用ワークフロー（フォーマット→完全ビルド）
 dev: fmt f-build
 	@echo "🚀 開発ワークフロー完了!"
 
@@ -110,37 +106,27 @@ fmt: validate-vars
 	@mkdir -p $(BACKUPDIR)
 	latexindent -w -m -c $(BACKUPDIR) -y=$(INDENT_CONFIG) $(TEXFILE).tex
 	@echo "🔧 セクションファイルもフォーマット中..."
-	@if [ -d "$(SECTIONSDIR)" ] && [ -n "$(wildcard $(SECTIONSDIR)/*.tex)" ]; then \
-        find $(SECTIONSDIR) -name "*.tex" -exec latexindent -w -m -c $(BACKUPDIR)/ -y=$(INDENT_CONFIG) {} \; ; \
+	@if [ -d "$(TEXDIR)/$(SECTIONSDIR)" ]; then \
+        find $(TEXDIR)/$(SECTIONSDIR) -name "*.tex" -exec latexindent -w -m -c $(BACKUPDIR)/ -y=$(INDENT_CONFIG) {} \; ; \
     fi
 	@echo "✅ フォーマット完了! (バックアップ: $(BACKUPDIR)/)"
 
-# 一時ファイルを削除（PDFは残す）
-clean: 
+clean:
 	@echo "🧹 一時ファイルを削除中..."
-	$(LATEX) -c $(TEXFILE)
+	$(LATEX) -c "$(TEXFILE)"
 	@echo "  ✅ 一時ファイルの削除完了"
 
-# 生成ファイルを完全削除（PDFも含む）
-f-clean: 
+f-clean:
 	@echo "🧹 すべての生成ファイルを削除中..."
-	$(LATEX) -C $(TEXFILE)
+	$(LATEX) -C "$(TEXFILE)"
 	@echo "  ✅ すべてのファイルの削除完了"
 
-# バックアップファイルを削除 
 d-back:
-	@echo "🧹 latexindentのバックアップファイルを削除中..."
-	@if [ -d "$(BACKUPDIR)" ]; then \
-        echo "  📁 $(BACKUPDIR)/ ディレクトリを削除中..."; \
-        rm -rf "$(BACKUPDIR)/"; \
-        echo "  ✅ $(BACKUPDIR)/ を削除しました"; \
-	else \
-        echo "  📁 $(BACKUPDIR)/ ディレクトリは存在しません"; \
-    fi
-	@echo "  🔍 latexindent バックアップファイルを検索中..."
+	@echo "🧹 latexindentバックアップ削除中..."
+	@if [ -d "$(BACKUPDIR)" ]; then rm -rf "$(BACKUPDIR)"; fi
 	@find . -maxdepth 2 -name "*.bak[0-9]*" -delete 2>/dev/null || true
 	@find . -maxdepth 2 -name "indent.log" -delete 2>/dev/null || true
-	@echo "✅ バックアップファイルの削除が完了しました!"
+	@echo "✅ 完了!"
 
 # =============================================================================
 # プロジェクト管理
@@ -190,7 +176,7 @@ c-project:
 	@read -p "テンプレートを選択してください (1-4): " choice; \
     case $$choice in \
         1) if [ -f "$(TEMPLATE_W)" ]; then \
-               cp $(TEMPLATE_W) $(TEXDIR)/$(TEXFILE).tex && \
+               cp $(TEMPLATE_W) $(TEXFILE).tex && \
                echo "✅ 文献管理テンプレートを設定しました" && \
                $(MAKE) --no-print-directory c-bib && \
                echo "📚 文献ファイルも自動作成しました"; \
@@ -198,13 +184,13 @@ c-project:
                echo "❌ $(TEMPLATE_W) が見つかりません"; \
            fi;; \
         2) if [ -f "$(TEMPLATE_S)" ]; then \
-               cp $(TEMPLATE_S) $(TEXDIR)/$(TEXFILE).tex && \
+               cp $(TEMPLATE_S) $(TEXFILE).tex && \
                echo "✅ シンプルテンプレートを設定しました"; \
            else \
                echo "❌ $(TEMPLATE_S) が見つかりません"; \
            fi;; \
         3) if [ -f "$(TEMPLATE_A)" ]; then \
-               cp $(TEMPLATE_A) $(TEXDIR)/$(TEXFILE).tex && \
+               cp $(TEMPLATE_A) $(TEXFILE).tex && \
                echo "✅ 学術論文テンプレートを設定しました" && \
                $(MAKE) --no-print-directory c-bib && \
                echo "📚 文献ファイルも自動作成しました"; \
@@ -212,7 +198,7 @@ c-project:
                echo "❌ $(TEMPLATE_A) が見つかりません"; \
            fi;; \
         4) if [ -f "$(TEMPLATE_M)" ]; then \
-               cp $(TEMPLATE_M) $(TEXDIR)/$(TEXFILE).tex && \
+               cp $(TEMPLATE_M) $(TEXFILE).tex && \
                echo "✅ 最小テンプレートを設定しました"; \
            else \
                echo "❌ $(TEMPLATE_M) が見つかりません"; \
@@ -673,48 +659,24 @@ a-inproceedings:
 view: validate-vars
 	@echo "📖 VS Code でPDFを開いています..."
 	@if [ -f "$(MAINPDF)" ]; then \
-        echo "  📄 $(MAINPDF) を開いています..."; \
-        code "$(MAINPDF)" || \
-        echo "  ⚠️  VS Codeが利用できません。手動で $(MAINPDF) を開いてください"; \
+        echo "  📄 $(MAINPDF)"; \
+        code "$(MAINPDF)" || echo "  ⚠️ VS Codeがなければ手動で開いてください"; \
     else \
-        echo "  ❌ PDFファイルが見つかりません: $(MAINPDF)"; \
-        echo "  💡 先に 'make all' または 'make dev' でビルドしてください"; \
+        echo "  ❌ PDFが見つかりません: $(MAINPDF)"; \
+        echo "  💡 'make dev' でビルドしてください"; \
     fi
 
-# LaTeX Workshop の使用方法を表示
 h-view:
 	@echo "📖 LaTeX Workshop 使用ガイド"
-	@echo ""
-	@echo "🚀 VS Code でのLaTeX編集:"
-	@echo "  1. LaTeX Workshop 拡張機能をインストール済み"
-	@echo "  2. $(TEXFILE).tex を VS Code で開く"
-	@echo ""
-	@echo "⌨️  便利なショートカット:"
-	@echo "  Ctrl+Alt+V      - PDFプレビューを表示"
-	@echo "  Ctrl+Click      - SyncTeX（PDF↔TeXの相互ジャンプ）"
-	@echo ""
-	@echo "📖 LaTeX Workshop の機能:"
-	@echo "  • リアルタイムプレビュー"
-	@echo "  • シンタックスハイライト"
-	@echo "  • オートコンプリート"
-	@echo "  • エラーハイライト"
-	@echo "  • 文献管理サポート（upBibTeX）"
-	@echo "  • SyncTeX（PDF↔TeXの相互ジャンプ）"
-	@echo ""
-	@echo "💡 トラブルシューティング:"
-	@echo "  • ビルドエラー: 出力パネルでログを確認"
-	@echo "  • 文献が表示されない: 'make f-build' を実行"
-	@echo "  • フォーマット: 'make fmt' でコード整形"
-	@echo "  • SyncTeXが動作しない: 'make build' で再ビルド"
-	@echo ""
 	@if [ -f "$(MAINPDF)" ]; then \
-        echo "📄 現在のPDF: $(MAINPDF)"; \
-        echo "   ファイルサイズ: $$(du -h $(MAINPDF) | cut -f1)"; \
-        echo "   最終更新: $$(stat -c '%y' $(MAINPDF) | cut -d. -f1)"; \
-    else \
-        echo "📄 PDFファイル: 未作成"; \
-        echo "   💡 'make dev' でビルドしてください"; \
-    fi
+		echo "📄 現在のPDF: $(MAINPDF)"; \
+		du -h "$(MAINPDF)" | awk '{print "   サイズ:",$$1}'; \
+		if stat -c '%y' "$(MAINPDF)" >/dev/null 2>&1; then \
+	    	stat -c '   最終更新: %y' "$(MAINPDF)" | cut -d. -f1; \
+		else \
+	    	stat -f '   最終更新: %Sm' -t '%Y-%m-%d %H:%M:%S' "$(MAINPDF)"; \
+	  	fi; \
+	else echo "📄 PDF: 未作成（'make dev' 推奨）"; fi
 
 # 文献ファイルの内容を表示
 l-bib:
@@ -776,38 +738,34 @@ s-bib:
 # プロジェクト状況を表示
 status:
 	@echo "📊 プロジェクト状況:"
-	@echo "  メインファイル: $(TEXFILE).tex"
-	@echo "  セクション数: $(words $(SUBFILES)) ファイル"
-	@if [ -n "$(BIBFILES)" ] && [ -f "$(BIBFILES)" ]; then \
-        echo "  文献ファイル: $(BIBFILES) ✅"; \
-        echo "  文献数: $$(grep -c '^@' $(BIBFILES)) 件"; \
+	@echo "  メイン: $(TEXFILE).tex"
+	@echo "  セクション数: $(words $(SUBFILES))"
+	@hasbib=false; for b in $(BIBFILES); do [ -f "$$b" ] && hasbib=true && break; done; \
+	if $$hasbib; then \
+        echo "  文献: $(BIBFILES) ✅"; \
+        total=$$(grep -hc '^@' $(BIBFILES) 2>/dev/null | awk '{s+=$$1} END{print s+0}'); \
+        echo "  文献数: $$total 件"; \
     else \
-        echo "  文献ファイル: なし ℹ️"; \
+        echo "  文献: なし ℹ️"; \
     fi
-	@echo "  ビルド出力: $(TEXDIR)/"
-	@if [ -d "$(TEXDIR)" ]; then \
-        echo "  生成ファイル:"; \
-        ls -la $(TEXDIR)/ | grep -E '\.(pdf|synctex\.gz)$$' || echo "    (PDFファイルなし)"; \
-    else \
-        echo "  (まだビルドされていません)"; \
-    fi
+	@echo "  出力先: $(TEXDIR)/"
+	@ls -la $(TEXDIR)/ | grep -E '\.(pdf|synctex\.gz)$$' || echo "    (PDFなし)"
 
-# 文書統計（文字数・ページ数）
 count: validate-vars
 	@echo "📊 文書統計"
-	@if [ -f "$(TEXFILE).tex" ]; then \
-		echo "📄 ファイル: $(TEXFILE).tex"; \
-		echo " 文字数: $$(wc -c < $(TEXFILE).tex | tr -d ' ')"; \
-		echo " 行数: $$(wc -l < $(TEXFILE).tex | tr -d ' ')"; \
-		echo " 単語数: $$(wc -w < $(TEXFILE).tex | tr -d ' ')"; \
-		if [ -f "$(MAINPDF)" ]; then \
-			echo "📄 PDFページ数: $$(pdfinfo $(MAINPDF) 2>/dev/null | grep Pages | cut -d: -f2 | tr -d ' ' || echo '不明')"; \
-		else \
-			echo "📄 PDFページ数: PDFファイルが存在しません"; \
-		fi; \
+	@echo "📄 $(TEXFILE).tex"
+	@wc -c < $(TEXFILE).tex | xargs echo "  文字数:"
+	@wc -l < $(TEXFILE).tex | xargs echo "  行数:"
+	@wc -w < $(TEXFILE).tex | xargs echo "  単語数:"
+	@if [ -f "$(MAINPDF)" ]; then \
+		pdfinfo "$(MAINPDF)" 2>/dev/null | grep Pages | awk -F: '{gsub(/ /,""); print "  ページ数: " $$2}'; \
 	else \
-		echo "❌ $(TEXFILE).tex が見つかりません"; \
+		echo "  ページ数: PDFが存在しません"; \
 	fi
+
+watch: validate-vars
+	@echo "🔍 ファイル変更を監視しています...(変更があると自動でビルドされます)"
+	@$(LATEX) -pdfdvi -silent -halt-on-error -pvc "$(TEXFILE)"
 
 # =============================================================================
 # ヘルプ・使用方法
@@ -829,6 +787,7 @@ help:
 	@echo "  make f-clean    - すべての生成ファイルを削除"
 	@echo "  make d-back     - バックアップファイルを削除"
 	@echo "  make fmt        - LaTeXファイルをフォーマット"
+	@echo "  make watch      - ファイル変更を監視してビルド"
 	@echo ""
 	@echo "文献管理(upBibTeX):"
 	@echo "  make bib        - 文献データベースを処理"
@@ -845,11 +804,11 @@ help:
 	@echo "  make l-tmp      - テンプレート一覧を表示"
 	@echo ""
 	@echo "設定:"
-	@echo "  メインファイル: $(TEXFILE).tex"
-	@echo "  文献ファイル: $(BIBFILES)"
-	@echo "  ビルドディレクトリ: $(TEXDIR)/"
+	@echo "  メインファイル : $(TEXFILE).tex"
+	@echo "  文献ファイル :$(BIBFILES)"
+	@echo "  ビルドディレクトリ : $(TEXDIR)/"
 
 .PHONY : c-project help validate-vars build f-build dev clean f-clean d-back fmt bib \
 	c-bib a-bib l-bib s-bib a-book a-article a-online a-inbook a-manual \
 	a-thesis a-inproceedings view h-view status count \
-	l-tmp 
+	l-tmp watch
