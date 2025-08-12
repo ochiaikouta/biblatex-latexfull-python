@@ -52,6 +52,7 @@ VS Code でフォルダを開き、「`Reopen in Container`」を選択します
 
 ```bash
 make c-project   # テンプレートからtex/main.texを作成
+make watch       # 変更を監視して自動ビルド
 make dev         # フォーマット → 完全ビルド
 make view        # PDF を開く
 ```
@@ -99,6 +100,7 @@ make dev
 make build     # LaTeX文書をビルド
 make f-build   # 文献処理も含む完全ビルド（upBibTeX）
 make bib       # 文献のみ処理（upBibTeX）
+make watch     # 変更を監視して自動ビルド
 
 # Bibファイル
 make a-bib     # Bibファイルに追加

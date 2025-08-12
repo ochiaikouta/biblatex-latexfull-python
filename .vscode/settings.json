@@ -3,54 +3,34 @@
     {
       "name": "make-dev",
       "command": "make",
-      "args": [
-        "-f",
-        "%WORKSPACE_FOLDER%/Makefile",
-        "-C",
-        "%WORKSPACE_FOLDER%",
-        "dev"
-      ]
+      "args": ["-f", "%WORKSPACE_FOLDER%/Makefile", "-C", "%WORKSPACE_FOLDER%", "dev"]
     }
   ],
   "latex-workshop.latex.recipes": [
-    {
-      "name": "Make Dev (Format + Build)",
-      "tools": [
-        "make-dev"
-      ]
-    }
+    { "name": "Make Dev (format+build)", "tools": ["make-dev"] }
   ],
-  "latex-workshop.latex.recipe.default": "Make Dev (Format + Build)",
-  "latex-workshop.view.pdf.viewer": "tab",
-  // VS Code の独自処理を無効化し、完全に Makefile に任せる
+  "latex-workshop.latex.recipe.default": "Make Dev (format+build)",
+
   "latex-workshop.latex.build.forceRecipeUsage": true,
-  "latex-workshop.latex.autoClean.run": "never",
   "latex-workshop.latex.autoBuild.run": "never",
+  "latex-workshop.latex.autoClean.run": "never",
   "latex-workshop.latex.rootFile.doNotPrompt": true,
   "latex-workshop.latex.rootFile.useSubFile": false,
-  "latex-workshop.synctex.afterBuild.enabled": true,
-  // 検索パスを実際の構成に合わせて修正
-  "latex-workshop.latex.search.rootFiles.include": [
-    "tex/*.tex"
-  ],
+
+  "latex-workshop.latex.search.rootFiles.include": ["tex/*.tex"],
   "latex-workshop.latex.search.rootFiles.exclude": [
-    "**/.backups/**",
-    "**/templates/**",
-    "**/sample/**"
-  ],
-  // LaTeX フォーマット設定
-  "latex-workshop.formatting.latex": "latexindent",
-  "latex-workshop.formatting.latexindent.path": "latexindent",
-  "latex-workshop.formatting.latexindent.args": [
-    "-m",
-    "-y=.indentconfig.yaml",
-    "-c=%DIR%/",
-    "%TMPFILE%"
+    "**/.backups/**","**/templates/**","**/sample/**"
   ],
 
-  // 保存時の自動フォーマットは make dev に任せるため無効化
-  "[latex]": {
-    "editor.formatOnSave": false,
-    "editor.defaultFormatter": "James-Yu.latex-workshop"
-  }
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.synctex.afterBuild.enabled": true,
+
+  "latex-workshop.formatting.latex": "latexindent",
+  "latex-workshop.formatting.latexindent.path": "latexindent",
+  "latex-workshop.formatting.latexindent.args": ["-m","-y=.indentconfig.yaml","-c=%DIR%/","%TMPFILE%"],
+  "[latex]": { "editor.formatOnSave": false, "editor.defaultFormatter": "James-Yu.latex-workshop" },
+
+  "editor.tabSize": 2,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true
 }
