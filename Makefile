@@ -62,7 +62,7 @@ validate-vars:
 
 build: validate-vars
 	@echo "🚀 ビルド開始: $(TEXFILE).tex"
-	$(LATEX) "$(TEXFILE)"
+	$(LATEX) -halt-on-error "$(TEXFILE)"
 
 # 文献処理（BIBFILESが1つでもあればOK）
 bib: validate-vars
@@ -87,7 +87,7 @@ f-build: validate-vars
 		echo "  📚 upBibTeX 実行"; \
 		( cd $(TEXDIR) && upbibtex $(MAIN) ) || true; \
 		echo "  🔄 最終ビルド"; \
-		$(LATEX) -gg -silent -halt-on-error "$(TEXFILE)"; \
+		$(LATEX) -gg -halt-on-error "$(TEXFILE)"; \
 	else \
 		echo "  ℹ️ .bib が無いので文献処理はスキップ"; \
 	fi
