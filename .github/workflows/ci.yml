@@ -12,18 +12,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check if LaTeX files exist
+        id: check-tex
+        run: |
+          if [ -f "tex/main.tex" ]; then
+            echo "tex_files_exist=true" >> $GITHUB_OUTPUT
+            echo "✅ LaTeX ファイルが存在します。ビルドを続行します。"
+          else
+            echo "tex_files_exist=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ LaTeX ファイルが存在しません。ビルドをスキップします。"
+          fi
+
       - name: Build Docker image
+        if: steps.check-tex.outputs.tex_files_exist == 'true'
         run: docker build -t latex-build .devcontainer/
 
       - name: Generate CI Images
+        if: steps.check-tex.outputs.tex_files_exist == 'true'
         run: |
           docker run --rm -v ${{ github.workspace }}:/workspace latex-build bash -c "cd /workspace && python3 scripts/generate_ci_images.py"
 
       - name: Build PDF
+        if: steps.check-tex.outputs.tex_files_exist == 'true'
         run: |
           docker run --rm -v ${{ github.workspace }}:/workspace latex-build bash -c "cd /workspace && make f-build"
 
       - name: Upload PDF
+        if: steps.check-tex.outputs.tex_files_exist == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: pdf
