@@ -7,28 +7,46 @@ import re
 import os
 from pathlib import Path
 
-def get_figures_directory_images():
-    """tex/figuresディレクトリ内の画像ファイルを検出"""
-    figures_dir = 'tex/figures'
+def extract_image_references():
+    """LaTeXファイルから画像参照を抽出"""
+    # texディレクトリ内のLaTeXファイルを検索
+    tex_files = []
+    for root, dirs, files in os.walk('tex'):
+        for file in files:
+            if file.endswith('.tex'):
+                tex_files.append(os.path.join(root, file))
 
-    if not os.path.exists(figures_dir):
-        print(f"ℹ️  {figures_dir}ディレクトリが存在しません")
+    if not tex_files:
+        print("❌ tex/ディレクトリに.texファイルが見つかりません")
         return set()
 
-    # サポートされている画像形式
-    image_extensions = {'.png', '.jpg', '.jpeg', '.gif', '.svg', '.bmp', '.tiff', '.eps', '.ps'}
-
+    # \includegraphicsの参照を抽出
+    pattern = r'\\includegraphics(?:\[.*?\])?\{([^}]+)\}'
     image_paths = set()
 
-    for root, dirs, files in os.walk(figures_dir):
-        for file in files:
-            # 拡張子をチェック
-            if any(file.lower().endswith(ext) for ext in image_extensions):
-                # 拡張子を除去してベース名を取得
-                base_name = os.path.splitext(file)[0]
-                # tex/figuresからの相対パス
-                rel_path = os.path.relpath(os.path.join(root, base_name), 'tex')
-                image_paths.add(rel_path)
+    for tex_file in tex_files:
+        print(f"🔍 解析中: {tex_file}")
+        try:
+            with open(tex_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+
+            matches = re.findall(pattern, content)
+            for match in matches:
+                # パスを正規化
+                path = match.strip()
+                if '.' in os.path.basename(path):
+                    # 拡張子がある場合は除去
+                    base, ext = os.path.splitext(path)
+                    image_paths.add(base)
+                else:
+                    # 拡張子がない場合はそのまま
+                    image_paths.add(path)
+
+            if matches:
+                print(f"   画像参照: {', '.join(matches)}")
+
+        except Exception as e:
+            print(f"   エラー: {e}")
 
     return image_paths
 
@@ -159,14 +177,14 @@ def main():
     """メイン処理"""
     print("🖼️  CI環境用ダミー画像を生成中...")
 
-    # tex/figuresディレクトリ内の画像ファイルを検出
-    image_paths = get_figures_directory_images()
+    # LaTeXファイルから画像参照を抽出
+    image_paths = extract_image_references()
 
     if not image_paths:
-        print("ℹ️  tex/figuresディレクトリに画像ファイルが見つかりませんでした")
+        print("ℹ️  LaTeXファイルに画像参照が見つかりませんでした")
         return
 
-    print(f"📊 検出された画像ファイル: {len(image_paths)}個")
+    print(f"\n📊 検出された画像参照: {len(image_paths)}個")
     for path in image_paths:
         print(f"   📷 {path}")
 
