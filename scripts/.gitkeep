@@ -1,2 +1,0 @@
-# This file ensures that the scripts/ directory is tracked by Git
-# even when it's empty, so that the directory structure is preserved.
