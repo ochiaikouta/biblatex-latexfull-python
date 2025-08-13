@@ -5,6 +5,15 @@ $out_dir = 'tex';
 $aux_dir = 'tex';
 $pdf_mode = 3;
 
+
+
+# CI 環境用の分岐
+if ($ENV{'CI'}) {
+  # graphicx の demo オプションを有効化するために \CI 定義を注入
+  $latex = 'uplatex -kanji=utf8 -interaction=nonstopmode -file-line-error -synctex=1 %O "\\def\\CI{1}\\input{%S}"';
+}
+
+
 # uplatex + dvipdfmx
 $latex = 'uplatex -kanji=utf8 -interaction=nonstopmode -file-line-error -synctex=1 %O %S';
 $dvipdf = 'dvipdfmx %O -o %D %S';
