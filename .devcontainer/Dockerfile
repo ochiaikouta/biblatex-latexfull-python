@@ -17,7 +17,7 @@ RUN apt-get update && \
     poppler-utils && \
     rm -rf /var/lib/apt/lists/* && \
     echo "✅ システムパッケージが正常にインストールされました"
-    
+
 # =============================================================================
 # Python環境のセットアップ
 # =============================================================================
@@ -32,5 +32,5 @@ RUN pip3 install --break-system-packages -r /tmp/requirements.txt && \
 ARG TL_UPDATE=0
 RUN tlmgr update --self && \
     if [ "$TL_UPDATE" = "1" ]; then tlmgr update --all; fi && \
-    tlmgr install latexindent physics mhchem quantikz algorithm2e && \
+    tlmgr install latexindent physics && \
     echo "✅ TeX Live パッケージの更新が完了しました"

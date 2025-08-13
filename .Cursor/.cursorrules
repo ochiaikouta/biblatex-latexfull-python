@@ -1,33 +1,38 @@
 # Project Context
-- upLaTeX + dvipdfmx, upBibTeX, jplain.bst。
-- ビルドは `make dev`（fmt→build）。監視は `make watch`。
-- 文章は日本語、理学系レポート/論文想定。
-- テンプレートをクローンして使ってます。
-- githubのリポジトリは https://github.com/ochiaikouta/uplatex-upbibtex-devcontainer-jaです。
+- upLaTeX + dvipdfmx, upBibTeX, jplain.bst
+- ビルドは `make dev`（fmt→build）、監視は `make watch`
+- 文章は日本語、理学系レポート/論文想定
+- Dev Container + VS Code LaTeX Workshop環境
+- CI/CD対応（GitHub Actionsで自動ビルドとダミー画像生成）
 
 # Style & Conventions
 - 数式は `\begin{equation}` 基本、番号不要は `\[` `\]`。
 - 図表は `figure/table` + `\caption` + `\label{fig:.../tab:...}`。
-- 参照は `\ref` / 文献は `\cite{key}`、脚注は控えめ。
+- 参照は `\ref`,`\eqref`,`\cref` など/ 文献は `\cite{key}`、脚注は控えめ。
 - 句読点は「、。」を基本。全角記号優先。
 
 # File Layout
 - メイン: tex/main.tex
 - セクション: tex/sections/*.tex を `\input{sections/..}` で収載
-- 図: tex/figures/
+- 図: tex/figures/（画像ファイルは.gitignoreで除外）
 - 文献: tex/*.bib（デフォ: refs.bib）
+- スクリプト: scripts/generate_ci_images.py（CI用ダミー画像生成）
+- CI設定: .github/workflows/ci.yml
 
 # Commands the AI may run/suggest
 - 文書追加: `make c-project`（初回のみ）
 - ビルド: `make dev` / 監視: `make watch`
 - 文献: `make a-bib`（対話で追加）
 - 整形のみ: `make fmt`
+- CI画像生成: `python3 scripts/generate_ci_images.py`
 
 # Do / Don't
-- DO: 既存マクロ・パッケージを尊重して最小変更。
-- DO: 図や式には必ずラベルを付ける。
-- DON'T: クラスやエンジンを勝手に変更しない（変更の意図がない限りuplatex固定）。
-- DON'T: 欧文向けのbiblatex提案に勝手に差し替えない。
+- DO: 既存マクロ・パッケージを尊重して最小変更
+- DO: 図や式には必ずラベルを付ける
+- DON'T: クラスやエンジンを勝手に変更しない（意図がない限りuplatex固定）
+- DON'T: 欧文向けのbiblatex提案に勝手に差し替えない
+- DON'T: 数式を勝手に変更したり新しく作成しない
+- DON'T: 画像ファイルをGitで管理しない（.gitignoreで除外）
 
 # Review Checklist (for PRs)
 - [ ] `make dev` がCI/GHAで通る
@@ -35,3 +40,5 @@
 - [ ] 参照切れ（??）がない
 - [ ] 文献重複や未使用エントリがない
 - [ ] 日本語の体裁（句読点/全角記号）が統一
+- [ ] 画像参照が正しく設定されている（\includegraphics）
+- [ ] CI環境でのダミー画像生成が正常に動作する

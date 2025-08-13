@@ -1,0 +1,30 @@
+name: Build PDF
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t latex-build .devcontainer/
+
+      - name: Generate CI Images
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/workspace latex-build bash -c "cd /workspace && python3 scripts/generate_ci_images.py"
+
+      - name: Build PDF
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/workspace latex-build bash -c "cd /workspace && make f-build"
+
+      - name: Upload PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdf
+          path: tex/main.pdf

@@ -1,6 +1,7 @@
 # Dev Container + upLaTeX + upBibTeX + Python
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/ochiaikouta/uplatex-upbibtex-devcontainer-ja)
+![build](https://github.com/ochiaikouta/uplatex-upbibtex-devcontainer-ja/actions/workflows/ci.yml/badge.svg)
 
 >upLaTeX + upBibTeX + VS Code (LaTeX Workshop) による日本語テンプレートです。  Dev Container / Codespaces で即利用できます。
 
@@ -18,6 +19,7 @@
 - **Dev Container/Codespaces** - すぐに利用可能
 - **latexmk設定** - `.latexmkrc`と`Makefile`によるラッパー（Lualatexなどにも変更可能）
 - **latexindent** - LaTeXコードのフォーマッター
+- **CI/CD対応** - GitHub Actionsで自動ビルドとダミー画像生成
 
 ---
 
@@ -68,7 +70,7 @@ make view        # PDF を開く
 
 ### 使用方法
 
-#### 1. 自動検知 
+#### 1. 自動検知
 
 Makeコマンドに含まれています。`workspace/`で
 ```bash
@@ -90,6 +92,36 @@ make dev
 ```
 
 
+
+---
+
+## 🚀 CI/CD と GitHub Actions
+
+### 自動ビルドシステム
+- **GitHub Actions**: プッシュ・プルリクエスト時に自動ビルド
+- **Docker環境**: 既存のDev Container環境を活用
+- **PDF生成**: ビルド結果をアーティファクトとして保存
+
+### ダミー画像自動生成
+- **LaTeX解析**: `\includegraphics`の参照を自動検出
+- **ダミー画像**: カメラアイコン風のデザイン
+- **CI環境対応**: 画像ファイルが不足していても自動生成
+- **Git管理不要**: 画像ファイルは`.gitignore`で除外
+
+### ワークフロー設定
+```yaml
+# .github/workflows/ci.yml
+- name: Generate CI Images
+  run: python3 scripts/generate_ci_images.py
+- name: Build PDF
+  run: make f-build
+```
+
+### メリット
+- **テンプレート化**: 画像ファイルなしでも即座に利用可能
+- **一貫性**: CI環境とローカル環境で同じ品質
+- **保守性**: 画像ファイルの管理が不要
+- **再利用性**: 他のプロジェクトでも簡単に導入可能
 
 ---
 
@@ -162,15 +194,17 @@ make help      # ヘルプ表示
 │ └── requirements.txt # Python パッケージ
 ├── .github/ # GitHub 設定
 │ ├── ISSUE_TEMPLATE/
-│ └── pull_request_template.md
+│ ├── pull_request_template.md
+│ └── workflows/ # GitHub Actions
+│     └── ci.yml # CI/CD ワークフロー
 ├── .vscode/ # VS Code 設定
 ├── scripts/ # スクリプトファイル
-├── jupyter/ # Jupyter Notebook
-├── python/ # Python スクリプト
+│ └── generate_ci_images.py # CI用ダミー画像生成Pythonスクリプト
 ├── .gitignore # Git 除外設定
 ├── LICENSE # ライセンス情報
 └── README.md
 ```
+JupyterNotebookやPythonのフォルダは自由に追加してください。
 
 ---
 
