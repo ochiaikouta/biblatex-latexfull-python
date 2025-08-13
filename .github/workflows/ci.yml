@@ -9,14 +9,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: ghcr.io/paperist/texlive-ja:latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build (no format)
-        env:
-          CI: "1"   # 画像ダミー化やCI専用設定を有効化
-        run: make f-build
+      - name: Build Docker image
+        run: docker build -t latex-build .
+
+      - name: Build PDF
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/workspace latex-build make f-build
 
       - name: Upload PDF
         uses: actions/upload-artifact@v4
