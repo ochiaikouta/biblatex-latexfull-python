@@ -16,7 +16,6 @@
 \fi
 \usepackage{graphicx}
 
-
 \title{こんにちは\LaTeX}
 \author{山田太朗}
 \date{\today}
@@ -29,6 +28,14 @@
 
 GitHub Actions のCIを試しています。
 
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.6\textwidth]{figures/test-image.png}
+	\caption{CIテスト用の画像}
+	\label{fig:test-image}
+\end{figure}
+
+この画像はCI環境で正しく処理されるはずです。\cite{fujita2020}
 
 \bibliographystyle{jplain}
 \bibliography{refs}
