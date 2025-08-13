@@ -15,6 +15,10 @@ jobs:
       - name: Build Docker image
         run: docker build -t latex-build .devcontainer/
 
+      - name: Generate CI Images
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/workspace latex-build bash -c "cd /workspace && python3 scripts/generate_ci_images.py"
+
       - name: Build PDF
         run: |
           docker run --rm -v ${{ github.workspace }}:/workspace latex-build bash -c "cd /workspace && make f-build"
