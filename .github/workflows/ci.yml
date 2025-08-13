@@ -17,7 +17,7 @@ jobs:
 
       - name: Build PDF
         run: |
-          docker run --rm -v ${{ github.workspace }}:/workspace latex-build make f-build
+          docker run --rm -v ${{ github.workspace }}:/workspace latex-build bash -c "cd /workspace && make f-build"
 
       - name: Upload PDF
         uses: actions/upload-artifact@v4
